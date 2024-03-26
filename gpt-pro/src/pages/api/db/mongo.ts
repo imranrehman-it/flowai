@@ -1,16 +1,18 @@
-import { MongoClient } from "mongodb";
-import { NextApiRequest, NextApiResponse } from "next";
+// pages/api/testMongoDB.ts
 
-export const handler = async (req : NextApiRequest, res: NextApiResponse) => {
+import { NextApiRequest, NextApiResponse } from 'next';
+import { MongoClient } from 'mongodb';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const uri = process.env.MONGODB_URI as string;
     const client = new MongoClient(uri);
 
     try {
         await client.connect();
         console.log('Connected to MongoDB');
-        // Perform database operations here
+        const database = client.db('flow-ai');
 
-        res.status(200).json({ message: 'Connected to MongoDB' });
+        res.status(200).json({ message: 'Successfully connected to MongoDB'});
     } catch (error) {
         console.error('Error connecting to MongoDB:');
         res.status(500).json({ message: 'Error connecting to MongoDB' });
