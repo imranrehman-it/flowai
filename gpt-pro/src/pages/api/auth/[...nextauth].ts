@@ -18,8 +18,8 @@ export const authOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
-    
-      return baseUrl;
+      
+      return '/home';
     },
   },
 }
