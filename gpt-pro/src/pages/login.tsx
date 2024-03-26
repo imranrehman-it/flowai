@@ -6,8 +6,28 @@ import {LoginForm} from '../app/components/auth/LoginForm'
 import {SignInBtn} from '../app/components/auth/SignInBtn'
 import {Logo} from '../app/components/auth/Logo'
 import {Heading} from '../app/components/auth/Heading'
+import {ClosingTag} from '../app/components/auth/ClosingTag'
 
 
+const SignInProviders = () => {
+  return (
+     <div className="flex justify-between mb-4">
+        <Google/>
+        <Github/>
+    </div>
+  )
+}
+
+const Form = () => {
+    return (
+        <form className="space-y-4 md:space-y-6" action="#">
+            <LoginForm/>
+            <SignInProviders/>
+            <SignInBtn/>
+            <ClosingTag />
+        </form>
+    )
+}
 export default function Login() {
   return (
      <section className="bg-gray-50 dark:bg-gray-900">
@@ -16,20 +36,14 @@ export default function Login() {
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <Heading text="Sign in to your account"/>
-                        <form className="space-y-4 md:space-y-6" action="#">
-                            <LoginForm/>
-                            <div className="flex justify-between mb-4">
-                                <Google/>
-                                <Github/>
-                            </div>
-                            <SignInBtn/>
-                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
-                            </p>
-                        </form>
+                        <Form/>
                     </div>
                 </div>
             </div>
         </section>
   );
 }
+
+
+
+
