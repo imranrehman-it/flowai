@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import {Logo} from '../app/components/auth/Logo'
 import { ProfileInfo } from '@/app/components/Home/ProfileInfo'
 
+import { MainContent } from '@/app/components/Home/MainContent'
+
 import {getSession, useSession} from 'next-auth/react'
-import { signOut } from 'next-auth/react'
-import { redirect } from 'next/dist/server/api-utils';
 import { useRouter } from 'next/router';
 
 const Home = () => {
@@ -31,9 +31,7 @@ const Home = () => {
       <div className="flex flex-1 overflow-hidden">
         <aside className="bg-gray-900 text-white w-64 p-4 m-2 hidden md:block rounded-lg">Sidebar</aside>
         
-        <main className="flex-1 bg-gray-900 p-4 overflow-auto m-2 rounded-lg">
-          Main Content
-        </main>
+        <MainContent/>
         
         <aside className="bg-gray-900 text-white w-64 p-4 m-2 hidden lg:block rounded-lg">Sidebar</aside>
       </div>
