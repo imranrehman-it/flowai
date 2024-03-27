@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { signIn } from "next-auth/react";
 import {Google} from '../app/components/auth/Google'
-import {Github} from '../app/components/auth/github'
+import {Github} from '../app/components/auth/Github'
 import {LoginForm} from '../app/components/auth/LoginForm'
 import {SignInBtn} from '../app/components/auth/SignInBtn'
 import {Logo} from '../app/components/auth/Logo'

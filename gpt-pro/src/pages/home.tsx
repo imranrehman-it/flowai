@@ -1,29 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react';
 import {Logo} from '../app/components/auth/Logo'
+import { ProfileInfo } from '@/app/components/Home/ProfileInfo'
+
 import {getSession, useSession} from 'next-auth/react'
+import { signOut } from 'next-auth/react'
+import { redirect } from 'next/dist/server/api-utils';
+import { useRouter } from 'next/router';
 
 const Home = () => {
   const {data:session} = useSession()
+  const router = useRouter()
 
   useEffect(()=>{
     const session = getSession().then((data)=>{
-        console.log(data)
+        if(!data){
+          router.push('/login')
+        }
     })
-    
-  })
+    console.log("session has changed")
+  },[session])
 
   return (
     <div className="flex flex-col h-[95vh] m-4">
       <header className="text-white p-4 rounded-lg flex justify-between w-full">
         <Logo/>
-        <div className='flex items-center space-x-3'>
-        <img src={session?.user?.image || ''} alt="user" className='w-10 h-10 rounded-full'/>
-        <div>
-            <p className='text-sm font-bold text-white'>{session?.user?.name}</p>
-            <p className='text-xs text-white'>{session?.user?.email}</p>
-        </div>
-        </div>
+        <ProfileInfo/>
       </header>
       
       <div className="flex flex-1 overflow-hidden">

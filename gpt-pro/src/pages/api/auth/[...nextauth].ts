@@ -5,8 +5,9 @@ import type { NextAuthOptions } from "next-auth"
 
 import { addUser, getUser } from "@/utilities/db/dbHelpers"
 import { getSession } from "next-auth/react"
-import { Session } from "inspector"
-import { AdapterUser } from "next-auth/adapters"
+import { Session } from "next-auth"
+import { JWT } from "next-auth/jwt"
+
 
 interface AuthenticatedUser {
     id: string;
@@ -14,9 +15,12 @@ interface AuthenticatedUser {
     email: string; 
 }
 
-interface AdapterSession{
-
+interface CustomSession extends Session{
+  id: string, 
+  name: string, 
+  data: any,
 }
+
 
 export const authOptions : NextAuthOptions = {
   providers: [
@@ -39,6 +43,7 @@ export const authOptions : NextAuthOptions = {
     },
 
     async signIn(params: {
+        //callback runs after user has been authenticated
         user: any;
         account: any;
         profile?: any;
@@ -61,7 +66,8 @@ export const authOptions : NextAuthOptions = {
     },
 
      async jwt({token, user}) {
-      
+          //jwt callback always runs before session and after signIn callback,
+          //any data you attach to user will be obtainable in session
            if (user?.id) {
                token.id = user.id
            }
@@ -71,12 +77,13 @@ export const authOptions : NextAuthOptions = {
            return token
         },
 
-    async session({session, token}) {
-        session.id = token.id;
+    async session({session, token}: {session: Session, token: JWT}) {
+        const customSession = session as CustomSession
+        customSession.id = token.id 
         const result = await getUser(token.id)
-        session.name = token.name;
-        session.data = result
-        return session;
+        customSession.name = token.name;
+        customSession.data = result
+        return customSession;
     }
 
    
