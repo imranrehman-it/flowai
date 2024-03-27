@@ -1,10 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Logo} from '../app/components/auth/Logo'
-import {useSession} from 'next-auth/react'
+import {getSession, useSession} from 'next-auth/react'
 
 const Home = () => {
   const {data:session} = useSession()
+
+  useEffect(()=>{
+    const session = getSession().then((data)=>{
+        console.log(data)
+    })
+    
+  })
 
   return (
     <div className="flex flex-col h-[95vh] m-4">

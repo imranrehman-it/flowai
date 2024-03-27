@@ -2,6 +2,7 @@ import { MongoClient, ObjectId } from 'mongodb'
 
 
 interface User {
+    id: string;
     name: string;
     email: string;
 }
@@ -28,9 +29,14 @@ export const addUser = async (user: User) =>{
         const db = client.db('flow-ai');
         const users = db.collection('users')
 
+        const preCheck = await getUser(user.id)
+        if(preCheck != null){
+            return preCheck //user already exist
+        }
+
         const result = await users.insertOne(user)
         console.log('User added', result.insertedId)
-        return result.insertedId
+        return result
 
     }catch(error){
         console.log('Error adding user', error)
@@ -38,15 +44,13 @@ export const addUser = async (user: User) =>{
     }
 }
 
-export const getUser = async(id: string) => {
+export const getUser = async(id: string) =>  {
     try{
         const client = await connectToDatabase();
         const db = client.db('flow-ai')
         const users = db.collection('users')
 
-        const objectId = new ObjectId(id);
-
-        const result = await users.findOne({_id: objectId})
+        const result = await users.findOne({id: id})
         return result
     }catch(error){
         console.log('Error getting user')
