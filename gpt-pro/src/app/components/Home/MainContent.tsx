@@ -1,29 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
 import { ChatBubble } from './ChatBubble';
 
-
 export const MainContent = () => {
-
-  
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState<{ prompt: string, answer: string }[]>([]);
-  const [answer, setAnswer] = useState('')
-  const [streaming, setStream] = useState(false)
+  const [response, setResponse] = useState<{ prompt: string; answer: string }[]>([]);
+  const [answer, setAnswer] = useState('');
+  const [streaming, setStream] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(()=>{
-    console.log('foo')
-    if(!streaming){
-      const data = {prompt: prompt, answer: answer}
-      if(!prompt || !answer){
-        return
+  useEffect(() => {
+    if (!streaming) {
+      const data = { prompt: prompt, answer: answer };
+      if (!prompt || !answer) {
+        return;
       }
       setResponse(prevResponses => [...prevResponses, data]);
-      setAnswer(''); // Reset answer after adding to response
-      setPrompt('')
+      setAnswer('');
+      setPrompt('');
+      // Scroll to the bottom when new response is added
+      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  },[streaming])
+  }, [streaming, prompt, answer]);
 
- 
   const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       try {
@@ -43,19 +41,17 @@ export const MainContent = () => {
         const decoder = new TextDecoder();
         const loopRunner = true;
         let chunks = '';
-        setStream(true)
+        setStream(true);
 
         while (loopRunner) {
-          // Here we start reading the stream, until its done.
           const { value, done } = await reader.read();
           if (done) {
-            setStream(false)
+            setStream(false);
             break;
           }
-          // const decodedChunk = decoder.decode(value, { stream: true });
           const decodedChunk = decoder.decode(value, { stream: true });
           chunks += decodedChunk;
-          setAnswer(answer => answer + decodedChunk); // update state with new chunk
+          setAnswer(answer => answer + decodedChunk);
         }
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
@@ -63,36 +59,35 @@ export const MainContent = () => {
     }
   };
 
-
   return (
-    <main className="flex-1 bg-gray-900 p-4 overflow-auto m-2 rounded-lg flex flex-col justify-between gap-3">
-      <div>
+    <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
+      <div className="flex flex-col flex-grow overflow-auto">
         <h1>Chat</h1>
-        {response?.map((item, index) => (
+        <div className="flex flex-col gap-2">
+          {response?.map((item, index) => (
             <div className="flex flex-col mb-2" key={index}>
-              <ChatBubble text={item?.prompt} position='right'/>
-              <ChatBubble text={item?.answer} position='left'/>
+              <ChatBubble text={item?.prompt} position="right" />
+              <ChatBubble text={item?.answer} position="left" />
             </div>
           ))}
           {answer && (
             <div className="flex flex-col">
-              <ChatBubble text={prompt} position='right'/>
-              <ChatBubble text={answer} position='left'/>
+              <ChatBubble text={prompt} position="right" />
+              <ChatBubble text={answer} position="left" />
             </div>
           )}
-          
-     
+        </div>
+        <div ref={inputRef}></div> {/* This empty div ensures that inputRef is always at the bottom */}
       </div>
-      <div className="w-full p-4">
-        <textarea 
-          type="text" 
-          className="w-full p-2 rounded-lg bg-gray-800 text-white" 
-          placeholder="Type something..." 
+      <div className="w-full bg-gray-900">
+        <textarea
+          ref={inputRef}
+          className="w-full p-2 rounded-lg bg-gray-800 text-white"
+          placeholder="Type something..."
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={handleSubmit}
           value={prompt}
         />
-
       </div>
     </main>
   );
