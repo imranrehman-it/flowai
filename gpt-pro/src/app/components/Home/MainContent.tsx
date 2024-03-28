@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react'
+import { ChatBubble } from './ChatBubble';
 
 
 export const MainContent = () => {
 
   
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState<string[]>([]);
+  const [response, setResponse] = useState<{ prompt: string, answer: string }[]>([]);
   const [answer, setAnswer] = useState('')
   const [streaming, setStream] = useState(false)
 
   useEffect(()=>{
+    console.log('foo')
     if(!streaming){
-      setResponse(prevResponses => [...prevResponses, answer]);
+      const data = {prompt: prompt, answer: answer}
+      if(!prompt || !answer){
+        return
+      }
+      setResponse(prevResponses => [...prevResponses, data]);
       setAnswer(''); // Reset answer after adding to response
+      setPrompt('')
     }
   },[streaming])
 
@@ -35,6 +42,7 @@ export const MainContent = () => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         const loopRunner = true;
+        let chunks = '';
         setStream(true)
 
         while (loopRunner) {
@@ -44,10 +52,11 @@ export const MainContent = () => {
             setStream(false)
             break;
           }
+          // const decodedChunk = decoder.decode(value, { stream: true });
           const decodedChunk = decoder.decode(value, { stream: true });
+          chunks += decodedChunk;
           setAnswer(answer => answer + decodedChunk); // update state with new chunk
         }
-        setPrompt('');
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
       }
@@ -56,20 +65,26 @@ export const MainContent = () => {
 
 
   return (
-    <main className="flex-1 bg-gray-900 p-4 overflow-auto m-2 rounded-lg flex flex-col justify-between">
+    <main className="flex-1 bg-gray-900 p-4 overflow-auto m-2 rounded-lg flex flex-col justify-between gap-3">
       <div>
-        
+        <h1>Chat</h1>
+        {response?.map((item, index) => (
+            <div className="flex flex-col mb-2" key={index}>
+              <ChatBubble text={item?.prompt} position='right'/>
+              <ChatBubble text={item?.answer} position='left'/>
+            </div>
+          ))}
+          {answer && (
+            <div className="flex flex-col">
+              <ChatBubble text={prompt} position='right'/>
+              <ChatBubble text={answer} position='left'/>
+            </div>
+          )}
+          
+     
       </div>
-      <h1>Chat</h1>
-      {response?.map((item, index) => (
-        <>
-          {item}
-        </>
-        
-      ))}
-      <p>{answer}</p>
       <div className="w-full p-4">
-        <input 
+        <textarea 
           type="text" 
           className="w-full p-2 rounded-lg bg-gray-800 text-white" 
           placeholder="Type something..." 
