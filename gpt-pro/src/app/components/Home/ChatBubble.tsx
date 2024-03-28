@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 
 
 
-export const ChatBubble = ({ text, position }) => {
+export const ChatBubble = ({ text, iconType }) => {
 
   const {data: session, status} = useSession()
   const [icon, setIcon] = useState<any>()
@@ -14,17 +14,17 @@ export const ChatBubble = ({ text, position }) => {
 
   useEffect(() => {
     
-    if (position === 'left') {
+    if (iconType === 'ai') {
       setIcon("https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg")
     } else {
-      setIcon(session?.user?.image)
+      setIcon("https://img.icons8.com/office/16/user.png")
     }
-  }, [position]);
+  }, [iconType]);
 
   return (
-    <div className='flex mb-2'>
+    <div className='flex mb-2 flex-row items-start'>
+      <img src={icon} alt="logo" width={16} height={16} className="mr-2" />
       <div className="bg-gray-800 p-3 rounded-md text-white items-start" style={{ maxWidth: '70%' }} >
-        <img src={icon} alt="logo" width={16} height={16} className="mr-2" />
         <MarkdownRenderer>{text}</MarkdownRenderer>
       </div>
     </div>

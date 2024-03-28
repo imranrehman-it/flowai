@@ -66,14 +66,14 @@ export const MainContent = () => {
         <div className="flex flex-col gap-2">
           {response?.map((item, index) => (
             <div className="flex flex-col mb-2" key={index}>
-              <ChatBubble text={item?.prompt} position="right" />
-              <ChatBubble text={item?.answer} position="left" />
+              <ChatBubble text={item?.prompt} iconType="user" />
+              <ChatBubble text={item?.answer} iconType="ai" />
             </div>
           ))}
           {answer && (
             <div className="flex flex-col">
-              <ChatBubble text={prompt} position="right" />
-              <ChatBubble text={answer} position="left" />
+              <ChatBubble text={prompt} iconType="user" />
+              <ChatBubble text={answer} iconType="ai" />
             </div>
           )}
         </div>
