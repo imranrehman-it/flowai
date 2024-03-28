@@ -1,30 +1,36 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
-let conversationContext: any[] = []
 
-const textPromp = async (req: NextApiRequest, res: NextApiResponse) =>{
+let conversationContext: any[] = [];
 
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
+const textPrompt: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+        const openai = new OpenAI({
+        apiKey: process.env.OPEN_API_KEY
     });
 
-    const {prompt} = req.body
-   try {
-        conversationContext.push({role: "user", content: prompt})
-        const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo-0125", // Specify the model you want to use
-            messages: conversationContext
+    try {
+        const {prompt} = req.body;
+        console.log('1')
+        conversationContext.push({role: 'user', content: prompt})
+        console.log('2')
+        const stream = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: conversationContext,
+            stream: true,
         });
+        console.log
 
-        const textResponse = response.choices[0].message
+        for await (const part of stream){
+            res.write(part.choices[0]?.delta.content || "");
+            console.log(part.choices[0]?.delta.content || "")
+        }
 
-        return res.status(200).json({ textResponse });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        res.end()
     }
 
+    catch(error){
+        console.log(error)
+    }
 }
-
-export default textPromp
+export default textPrompt;
