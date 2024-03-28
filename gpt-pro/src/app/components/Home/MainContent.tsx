@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Markdown from 'react-markdown'
+import React, { useEffect, useState } from 'react'
+
 
 export const MainContent = () => {
+
   
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState<string[]>([]);
@@ -62,7 +63,7 @@ export const MainContent = () => {
       <h1>Chat</h1>
       {response?.map((item, index) => (
         <>
-          <Markdown>{item}</Markdown> 
+          {item}
         </>
         
       ))}
