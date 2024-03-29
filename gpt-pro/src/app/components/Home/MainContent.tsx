@@ -9,6 +9,7 @@ export const MainContent = () => {
   const [response, setResponse] = useState<{ prompt: string; answer: string }[]>([]);
   const [answer, setAnswer] = useState('');
   const [streaming, setStream] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export const MainContent = () => {
   const fetchData = async () => {
     if (!streaming) {
       const session = await getSession(); // Await the session here
-      const data = { prompt: prompt, answer: answer };
+      const data = { prompt: currentPrompt, answer: answer };
       if (!prompt || !answer) {
         return;
       }
@@ -50,42 +51,47 @@ export const MainContent = () => {
 }, [streaming]);
 
 
-  const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+ const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      try {
-        const response = await fetch('http://localhost:3000/api/chat/chatgpt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ prompt: prompt })
-        });
+        // Store the prompt in a local variable to ensure it captures the latest value
+        const newPrompt = prompt;
+        setCurrentPrompt(newPrompt);
+        setPrompt('');
+        try {
+            const response = await fetch('http://localhost:3000/api/chat/chatgpt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: newPrompt }) // Use the newPrompt variable here
+            });
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let chunks = '';
+            setStream(true);
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    setStream(false);
+                    break;
+                }
+                const decodedChunk = decoder.decode(value, { stream: true });
+                chunks += decodedChunk;
+                setAnswer(prevAnswer => prevAnswer + decodedChunk);
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
         }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        const loopRunner = true;
-        let chunks = '';
-        setStream(true);
-
-        while (loopRunner) {
-          const { value, done } = await reader.read();
-          if (done) {
-            setStream(false);
-            break;
-          }
-          const decodedChunk = decoder.decode(value, { stream: true });
-          chunks += decodedChunk;
-          setAnswer(answer => answer + decodedChunk);
-        }
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-      }
     }
-  };
+};
+
+
 
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
@@ -100,7 +106,7 @@ export const MainContent = () => {
           ))}
           {answer && (
             <div className="flex flex-col">
-              <ChatBubble text={prompt} iconType="user" />
+              <ChatBubble text={currentPrompt} iconType="user" />
               <ChatBubble text={answer} iconType="ai" />
             </div>
           )}
