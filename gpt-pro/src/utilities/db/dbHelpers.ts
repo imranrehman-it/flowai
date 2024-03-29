@@ -57,3 +57,36 @@ export const getUser = async(id: string) =>  {
         throw error
     }
 }
+
+interface ChatRecord {
+  prompt: string;
+  answer: string;
+}
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    chat: ChatRecord[]; // Add this line
+}
+
+export const recordChat = async (data: ChatRecord, id: string) => {
+  try{
+    const client = await connectToDatabase();
+    const db = client.db('flow-ai')
+    const users = db.collection('users')
+
+    const user = await getUser(id)
+    console.log(user)
+
+    await users.updateOne(
+      { id: id },
+      { $push : {chat: data}}
+    );
+
+
+  }
+  catch(error){
+    console.log(error)
+  }
+}

@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ChatBubble } from './ChatBubble';
+import { recordChat } from '@/utilities/db/dbHelpers'
+import { getSession, useSession } from 'next-auth/react';
+
 
 export const MainContent = () => {
   const [prompt, setPrompt] = useState('');
@@ -9,18 +12,43 @@ export const MainContent = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+  // Define an async function inside the useEffect
+  const fetchData = async () => {
     if (!streaming) {
+      const session = await getSession(); // Await the session here
       const data = { prompt: prompt, answer: answer };
       if (!prompt || !answer) {
         return;
       }
       setResponse(prevResponses => [...prevResponses, data]);
+      console.log(session);
+
+      // Now you can use the session data in your fetch call
+      fetch('http://localhost:3000/api/chat/recordChat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: data, id: session?.data?.id }) // Access the user's id correctly
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        // Handle the response if needed
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+
       setAnswer('');
-      setPrompt('');
-      // Scroll to the bottom when new response is added
-      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      // setPrompt(''); // Consider moving this inside the fetch .then if you want to clear after confirmation of record
     }
-  }, [streaming, prompt, answer]);
+  };
+
+  fetchData(); // Call the async function
+}, [streaming]);
+
 
   const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -77,7 +105,7 @@ export const MainContent = () => {
             </div>
           )}
         </div>
-        <div ref={inputRef}></div> {/* This empty div ensures that inputRef is always at the bottom */}
+
       </div>
       <div className="w-full bg-gray-900">
         <textarea
