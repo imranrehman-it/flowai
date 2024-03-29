@@ -32,6 +32,7 @@ export const MainContent = () => {
         body: JSON.stringify({ data: data, id: session?.data?.id }) // Access the user's id correctly
       })
       .then(response => {
+        setPrompt('');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -42,7 +43,6 @@ export const MainContent = () => {
       });
 
       setAnswer('');
-      // setPrompt(''); // Consider moving this inside the fetch .then if you want to clear after confirmation of record
     }
   };
 
