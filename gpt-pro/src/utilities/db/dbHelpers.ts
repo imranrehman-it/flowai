@@ -90,3 +90,18 @@ export const recordChat = async (data: ChatRecord, id: string) => {
     console.log(error)
   }
 }
+
+export const getChat = async(id: string) => {
+    try{
+        const client = await connectToDatabase();
+        const db = client.db('flow-ai')
+        const users = db.collection('users')
+
+        const result = await users.findOne({id: id})
+        return result?.chat
+    }catch(error){
+        console.log('Error getting user')
+        throw error
+    }
+}
+

@@ -9,11 +9,11 @@ const textPrompt: NextApiHandler = async (req: NextApiRequest, res: NextApiRespo
         apiKey: process.env.OPEN_API_KEY
     });
 
+    const {prompt} = req.body;
+    conversationContext.push({role: 'user', content: prompt})
+
     try {
-        const {prompt} = req.body;
-        console.log('1')
-        conversationContext.push({role: 'user', content: prompt})
-        console.log('2')
+        console.log('conversationContext', conversationContext, req.body)
         const stream = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: conversationContext,

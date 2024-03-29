@@ -13,6 +13,29 @@ export const MainContent = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    const fetchChatHistory = async () => {
+      const session = await getSession();
+      try{
+        const response = await fetch('http://localhost:3000/api/chat/getChat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: session?.data?.id })
+        })
+        const data = await response.json(); // Parse the response data
+        setResponse(data)
+      }catch(error){
+        console.log('error', error)
+      }
+    
+    }
+
+    fetchChatHistory()
+    
+  }, [])
+
+  useEffect(() => {
   // Define an async function inside the useEffect
   const fetchData = async () => {
     if (!streaming) {
@@ -125,4 +148,24 @@ export const MainContent = () => {
       </div>
     </main>
   );
+};
+
+export const getServerSideProps = async () => {
+  console
+   const fetchChatHistory = async () => {
+    const session = await getSession();
+    const response = await fetch('http://localhost:3000/api/chat/getChat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: session?.data?.id })
+    })
+    const data = await response.json(); // Parse the response data
+    return data; // Return the fetched data
+  }
+  const initialData = await fetchChatHistory();
+  return {
+    props: { initialData },
+  };
 };
