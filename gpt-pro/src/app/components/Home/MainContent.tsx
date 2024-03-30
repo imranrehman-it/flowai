@@ -3,8 +3,15 @@ import { ChatBubble } from './ChatBubble';
 import { recordChat } from '@/utilities/db/dbHelpers'
 import { getSession, useSession } from 'next-auth/react';
 
+interface Chat {
+    id: string;
+    user: string;
+    messages: { role: string; content: string }[];
+}
 
-export const MainContent = () => {
+
+export const MainContent = ({currentChat}: {currentChat: Chat}) => {
+
   const [prompt, setPrompt] = useState('');
   const [responses, setResponses] = useState<{ role: string; content: string }[]>([]);
   const [answer, setAnswer] = useState('');
@@ -13,27 +20,25 @@ export const MainContent = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      const session = await getSession();
-      try{
+      const fetchChatHistory = async () => {
+        setResponses(currentChat.messages)
         const response = await fetch('http://localhost:3000/api/chat/getChat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: session?.data?.id })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: currentChat._id })
         })
         const data = await response.json(); // Parse the response data
-        setResponses(data)
-      }catch(error){
-        console.log('error', error)
+        console.log(data)
+        setResponses(data.messages)
       }
-    
-    }
 
-    fetchChatHistory()
-    
-  }, [])
+      if(currentChat){
+        fetchChatHistory()
+      }
+  }, [currentChat])
+
 
   useEffect(() => {
   // Define an async function inside the useEffect
@@ -51,7 +56,7 @@ export const MainContent = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data: data, id: session?.data?.id }) // Access the user's id correctly
+        body: JSON.stringify({ data: data, id: session?.data?.id, chatId: currentChat._id }) // Access the user's id correctly
       })
       .then(response => {
         setPrompt('');

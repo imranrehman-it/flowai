@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import { Chat } from './Chat'
 
-export const Chats = () => {
+export const Chats = ({handleChatClick}) => {
   const [chats, setChats] = useState([])
   const {data: session, status} = useSession()
 
@@ -10,7 +10,7 @@ export const Chats = () => {
 
     const fetchChats = async () => {
         const session = await getSession();
-        const response = await fetch('http://localhost:3000/api/chat/getChat', {
+        const response = await fetch('http://localhost:3000/api/chat/getChats', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const Chats = () => {
     <>
      <aside className="bg-gray-900 text-white w-64 p-4 m-2 overflow-y-auto md:block rounded-lg flex-col">
         {chats?.map((chat)=>(
-            <Chat key={chat._id} chat={chat} />
+            <Chat key={chat.id} chat={chat} handleChatClick={handleChatClick} />
         ))}
         <div onClick={handleNewChat} className="flex items-center p-2 mt-2 rounded-md hover:bg-gray-700 bg-gray-800">
             <span className="text-gray-300 ml-2">New Chat</span>

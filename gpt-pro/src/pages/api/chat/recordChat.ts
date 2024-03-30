@@ -7,10 +7,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     try {
       // Extract data from the request body
-      const { data, id } = req.body; // Assuming chatData contains the chat record and userId identifies the user
+      const { data, id, chatId } = req.body; // Assuming chatData contains the chat record and userId identifies the user
 
       // Call the recordChat function to save the chat data
-      await recordChat(data, id);
+      await recordChat(data, id, chatId);
 
       // Send a success response
       res.status(200).json({ message: 'Chat recorded successfully' });

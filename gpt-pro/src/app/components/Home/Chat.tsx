@@ -8,7 +8,7 @@ interface Chat {
     messages: []
 }
 
-export const Chat = ({chat}: {chat: Chat}) => {
+export const Chat = ({chat, handleChatClick}) => {
     const [title, setTitle] = useState('')
 
     useEffect(()=>{
@@ -16,7 +16,7 @@ export const Chat = ({chat}: {chat: Chat}) => {
     }, [chat])
 
   return (
-    <div onClick={()=>console.log(chat)} className="flex items-center p-2 mt-2 rounded-md hover:bg-gray-700 bg-gray-800">
+    <div onClick={()=>handleChatClick(chat)} className="flex items-center p-2 mt-2 rounded-md hover:bg-gray-700 bg-gray-800">
         <span className="text-gray-300 ml-2">{title}</span>
     </div>
   )

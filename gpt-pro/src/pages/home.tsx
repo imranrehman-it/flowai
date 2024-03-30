@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Logo} from '../app/components/auth/Logo'
 import { ProfileInfo } from '@/app/components/Home/ProfileInfo'
 
@@ -12,6 +12,12 @@ import { useRouter } from 'next/router';
 const Home = () => {
   const {data:session} = useSession()
   const router = useRouter()
+
+  const [currentChat, setCurrentChat] = useState(null)
+
+  const handleChatClick = (chat) => {
+    setCurrentChat(chat)
+  }
 
   useEffect(()=>{
     const session = getSession().then((data)=>{
@@ -30,8 +36,8 @@ const Home = () => {
       </header>
       
       <div className="flex flex-1 overflow-hidden">
-        <Chats/>
-        <MainContent/>
+        <Chats handleChatClick={handleChatClick}/>
+        <MainContent currentChat={currentChat}/>
         
         <aside className="bg-gray-900 text-white w-64 p-4 m-2 hidden lg:block rounded-lg">Sidebar</aside>
       </div>

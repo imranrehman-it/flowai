@@ -1,6 +1,7 @@
 import { MongoClient, ObjectId } from 'mongodb'
 
 
+
 interface User {
     id: string;
     name: string;
@@ -67,23 +68,23 @@ interface User {
     chat: ChatRecord[]; // Add this line
 }
 
-export const recordChat = async (data: ChatRecord, id: string) => {
-  try{
+export const recordChat = async (data: ChatRecord, id: string, chatId: string) => {
+  try {
     const client = await connectToDatabase();
-    const db = client.db('flow-ai')
-    const users = db.collection('users')
+    const db = client.db('flow-ai');
+    const chats = db.collection('chats');
 
-    await users.updateOne(
-      { id: id },
-      { $push : {chat: data}}
+    // Convert chatId to ObjectId
+    const objectIdChatId = new ObjectId(chatId);
+
+    await chats.updateOne(
+      { _id: objectIdChatId }, // Use objectIdChatId instead of chatId
+      { $push: { messages: data } }
     );
-
-
+  } catch (error) {
+    throw error;
   }
-  catch(error){
-    throw error
-  }
-}
+};
 
 export const getChats = async (id: string) => {
     try {
@@ -100,6 +101,19 @@ export const getChats = async (id: string) => {
     }
 };
 
+export const getChat = async (id: string) => {
+    try {
+        const client = await connectToDatabase();
+        const db = client.db('flow-ai');
+        const chats = db.collection('chats');
+
+        const result = await chats.findOne({ _id: new ObjectId(id) });
+        console.log('result', result)
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
 
 
 
