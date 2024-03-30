@@ -35,11 +35,9 @@ export const addUser = async (user: User) =>{
         }
 
         const result = await users.insertOne(user)
-        console.log('User added', result.insertedId)
         return result
 
     }catch(error){
-        console.log('Error adding user', error)
         throw error
     }
 }
@@ -53,14 +51,13 @@ export const getUser = async(id: string) =>  {
         const result = await users.findOne({id: id})
         return result
     }catch(error){
-        console.log('Error getting user')
         throw error
     }
 }
 
 interface ChatRecord {
-  prompt: string;
-  answer: string;
+  user: string;
+  content: string;
 }
 
 interface User {
@@ -77,7 +74,6 @@ export const recordChat = async (data: ChatRecord, id: string) => {
     const users = db.collection('users')
 
     const user = await getUser(id)
-    console.log(user)
 
     await users.updateOne(
       { id: id },
@@ -87,7 +83,7 @@ export const recordChat = async (data: ChatRecord, id: string) => {
 
   }
   catch(error){
-    console.log(error)
+    throw error
   }
 }
 
@@ -100,7 +96,6 @@ export const getChat = async(id: string) => {
         const result = await users.findOne({id: id})
         return result?.chat
     }catch(error){
-        console.log('Error getting user')
         throw error
     }
 }

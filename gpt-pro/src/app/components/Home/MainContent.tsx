@@ -6,7 +6,7 @@ import { getSession, useSession } from 'next-auth/react';
 
 export const MainContent = () => {
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState<{ prompt: string; answer: string }[]>([]);
+  const [response, setResponse] = useState<{ role: string; content: string }[]>([]);
   const [answer, setAnswer] = useState('');
   const [streaming, setStream] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState('');
@@ -40,7 +40,7 @@ export const MainContent = () => {
   const fetchData = async () => {
     if (!streaming) {
       const session = await getSession(); // Await the session here
-      const data = { prompt: currentPrompt, answer: answer };
+      const data = { role: currentPrompt, content: answer };
       if (!prompt || !answer) {
         return;
       }
@@ -80,13 +80,15 @@ export const MainContent = () => {
         const newPrompt = prompt;
         setCurrentPrompt(newPrompt);
         setPrompt('');
+        const messages = response
+
         try {
             const response = await fetch('http://localhost:3000/api/chat/chatgpt', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ prompt: newPrompt }) // Use the newPrompt variable here
+                body: JSON.stringify({ prompt: newPrompt, messages: messages }) // Use the newPrompt variable here
             });
 
             if (!response.ok) {
@@ -123,8 +125,8 @@ export const MainContent = () => {
         <div className="flex flex-col gap-2">
           {response?.map((item, index) => (
             <div className="flex flex-col mb-2" key={index}>
-              <ChatBubble text={item?.prompt} iconType="user" />
-              <ChatBubble text={item?.answer} iconType="ai" />
+              <ChatBubble text={item?.role} iconType="user" />
+              <ChatBubble text={item?.content} iconType="ai" />
             </div>
           ))}
           {answer && (
@@ -150,22 +152,3 @@ export const MainContent = () => {
   );
 };
 
-export const getServerSideProps = async () => {
-  console
-   const fetchChatHistory = async () => {
-    const session = await getSession();
-    const response = await fetch('http://localhost:3000/api/chat/getChat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: session?.data?.id })
-    })
-    const data = await response.json(); // Parse the response data
-    return data; // Return the fetched data
-  }
-  const initialData = await fetchChatHistory();
-  return {
-    props: { initialData },
-  };
-};
