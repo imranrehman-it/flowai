@@ -17,14 +17,17 @@ export const Chats = ({handleChatClick}) => {
             },
             body: JSON.stringify({ id: session?.data?.id }),
         });
+        
         const data = await response.json()
-        setChats(data)
+        setChats(()=>data)
+        handleChatClick(data[0])
+        
+        
     }
     fetchChats()
   }, [])
 
   const handleNewChat = async () => {
-    const title = 'Your beautiful title'
     try{
         const response = await fetch('http://localhost:3000/api/chat/addChats', {
             method: 'POST',
@@ -50,7 +53,7 @@ export const Chats = ({handleChatClick}) => {
             <Chat key={chat.id} chat={chat} handleChatClick={handleChatClick} />
         ))}
         <div onClick={handleNewChat} className="flex items-center p-2 mt-2 rounded-md hover:bg-gray-700 bg-gray-800">
-            <span className="text-gray-300 ml-2">New Chat</span>
+            <span className="text-green-300 ml-2 font-bold">New Chat ➕</span>
         </div>
     </aside>
     </>

@@ -2,10 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ChatBubble } from './ChatBubble';
 import { recordChat } from '@/utilities/db/dbHelpers'
 import { getSession, useSession } from 'next-auth/react';
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface Chat {
     id: string;
     user: string;
+    title: string;
     messages: { role: string; content: string }[];
 }
 
@@ -17,11 +19,16 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
   const [answer, setAnswer] = useState('');
   const [streaming, setStream] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState('');
+  const [currentTitle, setCurrentTitle] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
       const fetchChatHistory = async () => {
+        setLoading(true)
         setResponses(currentChat.messages)
+        setCurrentTitle(currentChat.title)
         const response = await fetch('http://localhost:3000/api/chat/getChat', {
             method: 'POST',
             headers: {
@@ -32,6 +39,8 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
         const data = await response.json(); // Parse the response data
         console.log(data)
         setResponses(data.messages)
+        setLoading(false)
+
       }
 
       if(currentChat){
@@ -124,9 +133,14 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
       <div className="flex flex-col flex-grow overflow-auto">
-        <h1>Chat</h1>
-        <div className="flex flex-col gap-2">
-         {Array.isArray(responses) && responses.map((item, index) => (
+        <div className="sticky top-0 bg-gray-900 z-10 p-2 border-b border-gray-700">
+          <text className="text-gray-300 ml-1 text-[1.5rem] font-bold mb-2">{currentTitle}</text>
+        </div>
+        <div className="flex flex-col gap-2 h-full">
+         {loading && <div className="flex justify-center items-center h-full ">
+            <ClipLoader color="#fff" />
+          </div>}
+         {!loading && responses.map((item, index) => (
           <div className="flex flex-col mb-2" key={index}>
             <ChatBubble text={item?.role} iconType="user" />
             <ChatBubble text={item?.content} iconType="ai" />
