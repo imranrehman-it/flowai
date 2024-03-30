@@ -5,6 +5,7 @@ import { ProfileInfo } from '@/app/components/Home/ProfileInfo'
 
 import { MainContent } from '@/app/components/Home/MainContent'
 import { Chats } from '@/app/components/Home/Chats'
+import { PromptBar } from '@/app/components/Home/PromptBar'
 
 import {getSession, useSession} from 'next-auth/react'
 import { useRouter } from 'next/router';
@@ -56,10 +57,9 @@ const Home = () => {
       </header>
       
       <div className="flex flex-1 overflow-hidden">
-        <Chats handleChatClick={handleChatClick} setCurrentChat={setCurrentChat}/>
+        <Chats handleChatClick={handleChatClick} />
         <MainContent currentChat={currentChat}/>
-        
-        <aside className="bg-gray-900 text-white w-64 p-4 m-2 hidden lg:block rounded-lg">Sidebar</aside>
+        <PromptBar currentChat={currentChat}/>
       </div>
       
       <footer className="bg-gray-900 text-white p-4 rounded-lg m-2">Footer</footer>
