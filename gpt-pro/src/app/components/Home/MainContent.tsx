@@ -6,7 +6,7 @@ import { getSession, useSession } from 'next-auth/react';
 
 export const MainContent = () => {
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState<{ role: string; content: string }[]>([]);
+  const [responses, setResponses] = useState<{ role: string; content: string }[]>([]);
   const [answer, setAnswer] = useState('');
   const [streaming, setStream] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState('');
@@ -24,7 +24,7 @@ export const MainContent = () => {
         body: JSON.stringify({ id: session?.data?.id })
         })
         const data = await response.json(); // Parse the response data
-        setResponse(data)
+        setResponses(data)
       }catch(error){
         console.log('error', error)
       }
@@ -44,14 +44,14 @@ export const MainContent = () => {
       if (!prompt || !answer) {
         return;
       }
-      setResponse(prevResponses => [...prevResponses, data]);
+      setResponses(prevResponses => [...prevResponses, data]);
 
       fetch('http://localhost:3000/api/chat/recordChat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data: data, id: session?.data?.id }) 
+        body: JSON.stringify({ data: data, id: session?.data?.id }) // Access the user's id correctly
       })
       .then(response => {
         setPrompt('');
@@ -78,7 +78,7 @@ export const MainContent = () => {
         const newPrompt = prompt;
         setCurrentPrompt(newPrompt);
         setPrompt('');
-        const messages = response
+        const messages = responses
 
         try {
             const response = await fetch('http://localhost:3000/api/chat/chatgpt', {
@@ -121,11 +121,11 @@ export const MainContent = () => {
       <div className="flex flex-col flex-grow overflow-auto">
         <h1>Chat</h1>
         <div className="flex flex-col gap-2">
-          {response?.map((item, index) => (
-            <div className="flex flex-col mb-2" key={index}>
-              <ChatBubble text={item?.role} iconType="user" />
-              <ChatBubble text={item?.content} iconType="ai" />
-            </div>
+         {Array.isArray(responses) && responses.map((item, index) => (
+          <div className="flex flex-col mb-2" key={index}>
+            <ChatBubble text={item?.role} iconType="user" />
+            <ChatBubble text={item?.content} iconType="ai" />
+          </div>
           ))}
           {answer && (
             <div className="flex flex-col">

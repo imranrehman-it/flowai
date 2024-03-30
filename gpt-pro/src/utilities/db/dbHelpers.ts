@@ -85,28 +85,28 @@ export const recordChat = async (data: ChatRecord, id: string) => {
   }
 }
 
-export const getChat = async(id: string) => {
-    try{
+export const getChats = async (id: string) => {
+    try {
         const client = await connectToDatabase();
-        const db = client.db('flow-ai')
-        const users = db.collection('users')
+        const db = client.db('flow-ai');
+        const chats = db.collection('chats');
 
-        const result = await users.findOne({id: id})
-        return result?.chat
-    }catch(error){
-        throw error
+        // Find all chats where the user is the user id
+        const result = await chats.find({ user: id }).toArray(); // Use toArray() to convert the cursor to an array
+        console.log(result);
+        return result;
+    } catch (error) {
+        throw error;
     }
-}
+};
+
+
+
 
 
 export const addChat = async (title: string, id: string) => {
     if(!id){
         throw new Error('User not found')
-    }
-    
-
-    if(!title){
-        throw new Error('Title is required')
     }
 
   try{
@@ -128,7 +128,7 @@ export const addChat = async (title: string, id: string) => {
     const chatObject = await chats.insertOne(newChat)
     await users.updateOne({id: id}, {$push: {chat: chatObject.insertedId}})
 
-    return chatObject 
+    return newChat
   }
    
   catch(error){
