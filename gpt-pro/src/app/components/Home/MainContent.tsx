@@ -45,15 +45,13 @@ export const MainContent = () => {
         return;
       }
       setResponse(prevResponses => [...prevResponses, data]);
-      console.log(session);
 
-      // Now you can use the session data in your fetch call
       fetch('http://localhost:3000/api/chat/recordChat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data: data, id: session?.data?.id }) // Access the user's id correctly
+        body: JSON.stringify({ data: data, id: session?.data?.id }) 
       })
       .then(response => {
         setPrompt('');
@@ -95,13 +93,13 @@ export const MainContent = () => {
                 throw new Error('Network response was not ok');
             }
 
-            const reader = response.body.getReader();
+            const reader = response?.body?.getReader();
             const decoder = new TextDecoder();
             let chunks = '';
             setStream(true);
 
             while (true) {
-                const { value, done } = await reader.read();
+                const { value, done } = await reader?.read() as { value: Uint8Array, done: boolean };
                 if (done) {
                     setStream(false);
                     break;

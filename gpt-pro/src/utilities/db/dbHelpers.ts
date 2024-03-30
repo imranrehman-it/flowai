@@ -73,8 +73,6 @@ export const recordChat = async (data: ChatRecord, id: string) => {
     const db = client.db('flow-ai')
     const users = db.collection('users')
 
-    const user = await getUser(id)
-
     await users.updateOne(
       { id: id },
       { $push : {chat: data}}
@@ -98,5 +96,43 @@ export const getChat = async(id: string) => {
     }catch(error){
         throw error
     }
+}
+
+
+export const addChat = async (title: string, id: string) => {
+    if(!id){
+        throw new Error('User not found')
+    }
+    
+
+    if(!title){
+        throw new Error('Title is required')
+    }
+
+  try{
+    const client = await connectToDatabase();
+    const db = client.db('flow-ai')
+    const chats = db.collection('chats')
+    const users = db.collection('users')
+
+    if(!users){
+      throw new Error('User not found')
+    }
+
+    const newChat = {
+      title: title,
+      user: id,
+      messages: []
+    }
+
+    const chatObject = await chats.insertOne(newChat)
+    await users.updateOne({id: id}, {$push: {chat: chatObject.insertedId}})
+
+    return chatObject 
+  }
+   
+  catch(error){
+    throw error
+  }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react'
 import { SignOut } from '../auth/SignOut'
 import { useSession } from 'next-auth/react'
