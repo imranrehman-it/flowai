@@ -13,17 +13,20 @@ export const ChatBubble = ({ text, iconType }) => {
   const [style, setStyle] = useState('flex justify-end mb-2');
 
   useEffect(() => {
-    
-    if (iconType === 'ai') {
-      setIcon("https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg")
-    } else {
-      setIcon("https://img.icons8.com/office/16/user.png")
+    const initIcon = async () => {
+      if (iconType === 'ai') {
+        setIcon("https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg")
+      } else {
+        setIcon(session?.user.image)
+      }
     }
-  }, [iconType]);
+    
+    initIcon()
+  }, [iconType, session]);
 
   return (
     <div className='flex mb-2 flex-row items-start'>
-      <img src={icon} alt="logo" width={16} height={16} className="mr-2" />
+      <img src={icon} alt="logo" width={24} height={24} className="mr-4 mt-2 rounded-full" />
       <div className="bg-gray-800 p-3 rounded-md text-white items-start" style={{ maxWidth: '70%' }} >
         <MarkdownRenderer>{text}</MarkdownRenderer>
       </div>
