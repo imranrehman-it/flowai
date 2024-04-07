@@ -10,8 +10,11 @@ export const ChatBubble = ({ text, iconType }: { text: string, iconType: string 
 
   const {data: session, status} = useSession()
   const [icon, setIcon] = useState<any>()
+  const [style, setStyle] = useState("mr-4 mt-2 rounded-full")
 
-  const [style, setStyle] = useState("mr-4 mt-2 rounded-full");
+
+
+
 
   useEffect(() => {
     const initIcon = async () => {
@@ -29,7 +32,7 @@ export const ChatBubble = ({ text, iconType }: { text: string, iconType: string 
 
   return (
     <div className='flex mb-2 flex-row items-start '>
-      <img src={icon} alt="logo" width={24} height={24} className={style} />
+      <img src={icon} alt="logo" width={24} height={24} className={style}/>
       <div className="bg-gray-800 p-3 rounded-md text-white items-start" style={{ maxWidth: '70%' }} >
         <MarkdownRenderer>{text}</MarkdownRenderer>
       </div>
