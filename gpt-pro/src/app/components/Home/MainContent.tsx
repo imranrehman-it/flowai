@@ -5,7 +5,7 @@ import { getSession, useSession } from 'next-auth/react';
 import ClipLoader from "react-spinners/ClipLoader";
 
 interface Chat {
-    id: string;
+    _id: string;
     user: string;
     title: string;
     messages: { role: string; content: string }[];
@@ -127,6 +127,10 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
         }
     }
 };
+
+
+
+
 
 
 

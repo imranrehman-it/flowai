@@ -9,20 +9,16 @@ interface User {
 }
 
 const uri = process.env.MONGODB_URI as string;
+let client: MongoClient | null = null;
 
-export const connectToDatabase = async () =>{
-    const client = new MongoClient(uri);
-
-    try{
+const connectToDatabase = async () => {
+    if (!client) {
+        client = new MongoClient(uri);
         await client.connect();
-        console.log('Connected to MongoDV')
-        return client;
+        console.log('Connected to MongoDB');
     }
-    catch(error){
-        console.log('Error connecting to mongoDB', error)
-        throw error
-    }
-}
+    return client;
+};
 
 export const addUser = async (user: User) =>{
     try{
@@ -79,7 +75,7 @@ export const recordChat = async (data: ChatRecord, id: string, chatId: string) =
 
     await chats.updateOne(
       { _id: objectIdChatId }, // Use objectIdChatId instead of chatId
-      { $push: { messages: data } }
+      { $push: { messages: data as any } }
     );
   } catch (error) {
     throw error;
@@ -94,7 +90,6 @@ export const getChats = async (id: string) => {
 
         // Find all chats where the user is the user id
         const result = await chats.find({ user: id }).toArray(); // Use toArray() to convert the cursor to an array
-        console.log(result);
         return result;
     } catch (error) {
         throw error;
@@ -108,7 +103,6 @@ export const getChat = async (id: string) => {
         const chats = db.collection('chats');
 
         const result = await chats.findOne({ _id: new ObjectId(id) });
-        console.log('result', result)
         return result;
     } catch (error) {
         throw error;
@@ -140,7 +134,7 @@ export const addChat = async (title: string, id: string) => {
     }
 
     const chatObject = await chats.insertOne(newChat)
-    await users.updateOne({id: id}, {$push: {chat: chatObject.insertedId}})
+    await users.updateOne({id: id}, {$push: {chat: chatObject.insertedId as any }})
 
     return newChat
   }

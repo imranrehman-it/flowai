@@ -10,12 +10,10 @@ const textPrompt: NextApiHandler = async (req: NextApiRequest, res: NextApiRespo
     });
 
     const {prompt, messages} = req.body;
-     const messageHistory = messages.map(message => ({role: 'user', content: message.role}))
-     console.log(messageHistory)
+     const messageHistory = messages.map((message: {role: string, content: string}) => ({role: 'user', content: message.role}))
      messageHistory.push({role: 'user', content: prompt})
 
     try {
-        console.log('conversationContext', conversationContext, req.body)
         const stream = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: messageHistory,
@@ -30,6 +28,7 @@ const textPrompt: NextApiHandler = async (req: NextApiRequest, res: NextApiRespo
     }
 
     catch(error){
+        throw error
         console.log(error)
     }
 }
