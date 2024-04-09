@@ -23,7 +23,7 @@ export const ChatBubble = ({ text, iconType }: { text: string, iconType: string 
         setStyle("mr-4 mt-2 rounded-full animate-spin")
       } else {
         setIcon(session?.user?.image)
-        setStyle("flex justify-start mb-2")
+        setStyle("flex justify-start mb-2 mr-4 mt-2")
       }
     }
     
