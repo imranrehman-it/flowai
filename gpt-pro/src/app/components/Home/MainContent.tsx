@@ -138,7 +138,7 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
 
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
-      <div className="flex flex-col flex-grow overflow-auto">
+      {responses.length > 0 && ( <div className="flex flex-col flex-grow overflow-auto">
         <div className="sticky top-0 bg-gray-900 z-10 p-2 border-b border-gray-700">
           <text className="text-gray-300 ml-1 text-[1.5rem] font-bold mb-2">{currentTitle}</text>
         </div>
@@ -160,7 +160,12 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
           )}
         </div>
 
-      </div>
+      </div>)}
+      {responses.length === 0 && (
+        <div className="flex justify-center items-center h-full ">
+           <h1 className='text-gray-300 font-bold text-[1.5rem]'>Begin by asking anything</h1>
+        </div>
+      )}
       <div className="w-full bg-gray-900">
         <textarea
           ref={inputRef}
