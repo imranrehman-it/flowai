@@ -86,6 +86,15 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
 }, [streaming]);
 
 
+const scrollToChat = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+
+
  const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
         // Store the prompt in a local variable to ensure it captures the latest value
@@ -136,6 +145,7 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
 
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
+      <button onClick={() => scrollToChat('0')}>scroll to first chat</button>
       <div className="flex flex-col flex-grow overflow-auto">
         <div className="sticky top-0 bg-gray-900 z-10 p-2 border-b border-gray-700">
           <text className="text-gray-300 ml-1 text-[1.5rem] font-bold mb-2">{currentTitle}</text>
@@ -145,7 +155,7 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
             <ClipLoader color="#fff" />
           </div>}
          {!loading && responses.map((item, index) => (
-          <div className="flex flex-col mb-2" key={index}>
+          <div className="flex flex-col mb-2" key={index} id={index.toString()}>
             <ChatBubble text={item?.role} iconType="user" />
             <ChatBubble text={item?.content} iconType="ai" />
           </div>

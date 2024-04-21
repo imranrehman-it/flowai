@@ -23,6 +23,13 @@ const Home = () => {
     setCurrentChat(chat)
   }
 
+  const scrollToChat = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
   useEffect(()=>{
     if(status === 'loading'){
       setLoading(true)
@@ -59,7 +66,7 @@ const Home = () => {
       <div className="flex flex-1 overflow-hidden">
         <Chats handleChatClick={handleChatClick} />
         <MainContent currentChat={currentChat}/>
-        <PromptBar currentChat={currentChat}/>
+        <PromptBar currentChat={currentChat} scrollToChat={scrollToChat}/>
       </div>
       
       <footer className="bg-gray-900 text-white p-4 rounded-lg m-2">Footer</footer>
