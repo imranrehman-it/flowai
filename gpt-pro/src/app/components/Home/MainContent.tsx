@@ -86,13 +86,6 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
 }, [streaming]);
 
 
-const scrollToChat = (id: string) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
 
 
  const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -145,12 +138,11 @@ const scrollToChat = (id: string) => {
 
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
-      <button onClick={() => scrollToChat('0')}>scroll to first chat</button>
       <div className="flex flex-col flex-grow overflow-auto">
         <div className="sticky top-0 bg-gray-900 z-10 p-2 border-b border-gray-700">
           <text className="text-gray-300 ml-1 text-[1.5rem] font-bold mb-2">{currentTitle}</text>
         </div>
-        <div className="flex flex-col gap-2 h-full">
+        <div className="flex flex-col gap-2 h-full mt-4">
          {loading && <div className="flex justify-center items-center h-full ">
             <ClipLoader color="#fff" />
           </div>}
