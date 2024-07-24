@@ -3,7 +3,8 @@ import { ChatBubble } from './ChatBubble';
 import { recordChat } from '@/utilities/db/dbHelpers'
 import { getSession, useSession } from 'next-auth/react';
 import ClipLoader from "react-spinners/ClipLoader";
-import { useChat } from '@/context/ChatContext';
+import { useChat } from '../../../context/ChatContext';
+import { TextInput } from '../../components/Home/TextInput';
 
 interface Chat {
     _id: string;
@@ -20,7 +21,6 @@ export const MainContent = () => {
   const [streaming, setStream] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState('');
   const [currentTitle, setCurrentTitle] = useState('');
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const {currentChat, chats} = useChat()
   const ref = useRef<HTMLDivElement>(null);
 
@@ -93,10 +93,18 @@ export const MainContent = () => {
 }, [streaming]);
 
 
+useEffect(() => {
+  const scrollToBottom = () => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  };
+
+  requestAnimationFrame(scrollToBottom);
+}, [responses, answer]); // Trigger on changes
 
 
- const handleSubmit = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+ const handleSubmit = async (prompt) => {
         // Store the prompt in a local variable to ensure it captures the latest value
         const newPrompt = prompt;
         setCurrentPrompt(newPrompt);
@@ -130,15 +138,10 @@ export const MainContent = () => {
                 const decodedChunk = decoder.decode(value, { stream: true });
                 chunks += decodedChunk;
                 setAnswer(prevAnswer => prevAnswer + decodedChunk);
-                const div = ref.current;
-                if(div){
-                  div.scrollBy(0, div.scrollHeight);
-                }
             }
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
         }
-    }
 };
 
 
@@ -177,17 +180,7 @@ export const MainContent = () => {
            <h1 className='text-gray-300 font-bold text-[1.5rem]'>Begin by asking anything</h1>
         </div>
       )}
-      <div className="w-full bg-gray-900">
-        <textarea
-          ref={inputRef}
-          className="w-full p-2 rounded-lg bg-gray-800 text-white"
-          placeholder="Type something..."
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={handleSubmit}
-          value={prompt}
-        />
-      </div>
+      <TextInput handleSubmit={handleSubmit}/>
     </main>
   );
 };
-
