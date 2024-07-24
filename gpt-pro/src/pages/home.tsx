@@ -40,12 +40,12 @@ const Home = () => {
   },[status])
 
   useEffect(()=>{
-    const session = getSession().then((data)=>{
-        if(!data){
-          router.push('/login')
-        }
-    })
-    console.log("session has changed")
+    if(status === 'unauthenticated'){
+      router.push('/login')
+    }
+    else{
+      router.push('/home')
+    }
   },[session])
 
   return (

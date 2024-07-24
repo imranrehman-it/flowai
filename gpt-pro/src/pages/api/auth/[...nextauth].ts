@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       console.log("Redirect callback:", { url, baseUrl });
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      return baseUrl + '/home';
     },
 
     async signIn({ user, account, profile, email, credentials }: { user: any; account: any; profile?: any; email?: { verificationRequest?: boolean } | undefined; credentials?: any }) {
