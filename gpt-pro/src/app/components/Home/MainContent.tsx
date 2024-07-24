@@ -15,7 +15,6 @@ interface Chat {
 
 
 export const MainContent = () => {
-  const [prompt, setPrompt] = useState('');
   const [responses, setResponses] = useState<{ role: string; content: string }[]>([]);
   const [answer, setAnswer] = useState('');
   const [streaming, setStream] = useState(false);
@@ -74,7 +73,6 @@ export const MainContent = () => {
         body: JSON.stringify({ data: data, id: session?.data?.id, chatId: currentChat._id }) // Access the user's id correctly
       })
       .then(response => {
-        setPrompt('');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -104,11 +102,10 @@ useEffect(() => {
 }, [responses, answer]); // Trigger on changes
 
 
- const handleSubmit = async (prompt) => {
+ const handleSubmit = async (promptMessage: string) => {
         // Store the prompt in a local variable to ensure it captures the latest value
-        const newPrompt = prompt;
+        const newPrompt = promptMessage;
         setCurrentPrompt(newPrompt);
-        setPrompt('');
         const messages = responses
 
         try {
