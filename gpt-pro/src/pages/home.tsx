@@ -19,7 +19,15 @@ const Home = () => {
 
   const [currentChat, setCurrentChat] = useState(null)
 
-  const handleChatClick = (chat) => {
+
+  interface Chat {
+    _id: string,
+    title: string,
+    user: string,
+    messages: [{role: string, content: string}]
+  }
+
+  const handleChatClick = (chat: Chat) => {
     setCurrentChat(chat)
   }
 

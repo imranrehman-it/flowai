@@ -145,3 +145,19 @@ export const addChat = async (title: string, id: string) => {
   }
 }
 
+export const renameChat = async (id: string, title: string, user_id: User) => {
+  try{
+    const client = await connectToDatabase();
+    const db = client.db('flow-ai');
+    const chats = db.collection('chats');
+    const users = db.collection('users');
+
+    await chats.updateOne({user: user_id, _id: new ObjectId(id)}, {$set: {title: title}})
+    const updatedChat = await chats.findOne({user: user_id, _id: new ObjectId(id)})
+    return updatedChat
+  }
+  catch(error){
+    throw error
+  }
+}
+
