@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import { Chat } from './Chat'
 import { useChat } from '../../../context/ChatContext'
+import { FaSearch } from "react-icons/fa";
 
 
 interface Chat {
@@ -64,8 +65,9 @@ export const Chats = ({handleChatClick}: {handleChatClick: (chat: Chat) => void}
   return (
     <>
      <aside className="bg-gray-900 text-white w-64 p-4 m-2 overflow-y-auto md:block rounded-lg flex-col ">
-        <div id='searchbar' className=''>
-            <input type='text' onChange={(e)=>setFilter(e.target.value)} placeholder='Filter' className='bg-gray-800 text-white p-2 rounded-md w-full'/>
+        <div id='searchbar' className='bg-gray-800 flex flex-row p-2 rounded-md w-full items-center justify-between'>
+            <input type='text' onChange={(e)=>setFilter(e.target.value)} placeholder='Filter' className=' text-white rounded-md bg-gray-800 outline-none'/>
+            <FaSearch className='text-gray-300' />
         </div>
         {
             chats?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase())).map((chat)=>(
