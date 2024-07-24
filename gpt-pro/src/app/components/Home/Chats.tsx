@@ -20,6 +20,7 @@ export const Chats = ({handleChatClick}: {handleChatClick: (chat: Chat) => void}
   const {chats, setChats, updateChat, addChats} = useChat()
   const {data: session, status} = useSession() as {data: Session, status: string} | {data: null, status: string}
   const [selectedChat, setSelectedChat] = useState();
+  const [filter, setFilter] = useState('');
   useEffect(()=>{
 
     const fetchChats = async () => {
@@ -63,9 +64,14 @@ export const Chats = ({handleChatClick}: {handleChatClick: (chat: Chat) => void}
   return (
     <>
      <aside className="bg-gray-900 text-white w-64 p-4 m-2 overflow-y-auto md:block rounded-lg flex-col ">
-        {chats?.map((chat)=>(
-            <Chat key={chat.id} chat={chat} handleChatClick={handleChatClick} user_id={session?.data?.id} />
-        ))}
+        <div id='searchbar' className=''>
+            <input type='text' onChange={(e)=>setFilter(e.target.value)} placeholder='Filter' className='bg-gray-800 text-white p-2 rounded-md w-full'/>
+        </div>
+        {
+            chats?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase())).map((chat)=>(
+                <Chat key={chat.id} chat={chat} handleChatClick={handleChatClick} user_id={session?.data?.id} />
+            ))
+        }
         <div onClick={handleNewChat} className="flex items-center p-2 mt-2 rounded-md hover:bg-gray-700 bg-gray-800">
             <span className="text-green-300 ml-2 font-bold">New Chat ➕</span>
         </div>
