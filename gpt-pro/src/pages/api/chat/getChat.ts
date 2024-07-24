@@ -3,7 +3,6 @@ import { getChat } from "../../../utilities/db/dbHelpers";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const {id} = req.body 
-    
     try{
         const chat = await getChat(id)
         console.log('chat', chat)

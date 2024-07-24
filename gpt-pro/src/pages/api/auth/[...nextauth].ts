@@ -1,28 +1,25 @@
-import NextAuth from "next-auth"
-import GithubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
-import type { NextAuthOptions } from "next-auth"
+import NextAuth from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import type { NextAuthOptions } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
-import { addUser, getUser } from "@/utilities/db/dbHelpers"
-import { getSession } from "next-auth/react"
-import { Session } from "next-auth"
-import { JWT } from "next-auth/jwt"
-
+import { addUser, getUser } from "@/utilities/db/dbHelpers";
 
 interface AuthenticatedUser {
-    id: string;
-    name: string;
-    email: string; 
+  id: string;
+  name: string;
+  email: string;
 }
 
-interface CustomSession extends Session{
-  id: string, 
-  name: string, 
-  data: any,
+interface CustomSession extends Session {
+  id: string;
+  name: string;
+  data: any;
 }
 
-
-export const authOptions : NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -37,56 +34,52 @@ export const authOptions : NextAuthOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
-    async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
-      
-      return '/home';
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      console.log("Redirect callback:", { url, baseUrl });
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
 
-    async signIn(params: {
-        //callback runs after user has been authenticated
-        user: any;
-        account: any;
-        profile?: any;
-        email?: { verificationRequest?: boolean } | undefined;
-        credentials?: any;
-        }) { 
-        const user = params.user as AuthenticatedUser;
-        const userId = user.id
-        try{
-            const result = await addUser({id: userId, name: user.name, email: user.email})
-            const session = await getSession();
-            return true
-
-        }catch(error){
-            console.log('error signing in user', error)
-            return false;
-        }
-       
-
+    async signIn({ user, account, profile, email, credentials }: { user: any; account: any; profile?: any; email?: { verificationRequest?: boolean } | undefined; credentials?: any }) {
+      console.log("SignIn callback:", { user, account, profile, email, credentials });
+      const authenticatedUser = user as AuthenticatedUser;
+      const userId = authenticatedUser.id;
+      try {
+        console.log('Adding user:', authenticatedUser);
+        await addUser({ id: userId, name: authenticatedUser.name, email: authenticatedUser.email });
+        console.log('User added successfully');
+        return true;
+      } catch (error) {
+        console.error('Error signing in user:', error);
+        return false;
+      }
     },
 
-     async jwt({token, user}) {
-          //jwt callback always runs before session and after signIn callback,
-          //any data you attach to user will be obtainable in session
-           if (user?.id) {
-               token.id = user.id
-           }
-           if (user?.name) {
-               token.userName = user.name;
-           }
-           return token
-        },
+    async jwt({ token, user }: { token: JWT, user?: any }) {
+      console.log("JWT callback:", { token, user });
+      if (user?.id) {
+        token.id = user.id;
+      }
+      if (user?.name) {
+        token.userName = user.name;
+      }
+      return token;
+    },
 
-    async session({session, token}: {session: Session, token: JWT}) {
-        const customSession = session as CustomSession
-        customSession.id = token.id 
-        const result = await getUser(token.id)
-        customSession.name = token.name;
-        customSession.data = result
+    async session({ session, token }: { session: Session; token: JWT }) {
+      console.log("Session callback:", { session, token });
+      const customSession = session as CustomSession;
+      customSession.id = token.id;
+      customSession.name = token.userName;
+      try {
+        const result = await getUser(token.id);
+        customSession.data = result;
         return customSession;
-    }
-
-   
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        return customSession;
+      }
+    },
   },
-}
-export default NextAuth(authOptions)
+};
+
+export default NextAuth(authOptions);

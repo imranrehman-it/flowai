@@ -22,6 +22,7 @@ const connectToDatabase = async () => {
 
 export const addUser = async (user: User) =>{
     try{
+        console.log('user', user)
         const client = await connectToDatabase();
         const db = client.db('flow-ai');
         const users = db.collection('users')
