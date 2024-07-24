@@ -22,6 +22,7 @@ export const MainContent = () => {
   const [currentTitle, setCurrentTitle] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const {currentChat, chats} = useChat()
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     console.log('something in chat has changed')
@@ -87,6 +88,7 @@ export const MainContent = () => {
     }
   };
 
+
   fetchData(); // Call the async function
 }, [streaming]);
 
@@ -128,6 +130,10 @@ export const MainContent = () => {
                 const decodedChunk = decoder.decode(value, { stream: true });
                 chunks += decodedChunk;
                 setAnswer(prevAnswer => prevAnswer + decodedChunk);
+                const div = ref.current;
+                if(div){
+                  div.scrollBy(0, div.scrollHeight);
+                }
             }
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
@@ -143,7 +149,7 @@ export const MainContent = () => {
 
   return (
     <main className="flex-1 bg-gray-900 p-4 overflow-hidden m-2 rounded-lg flex flex-col gap-3">
-      {responses.length > 0 && ( <div className="flex flex-col flex-grow overflow-auto">
+      {responses.length > 0 && ( <div ref={ref} className="flex flex-col flex-grow overflow-auto">
         <div className="sticky top-0 bg-gray-900 z-10 p-2 border-b border-gray-700">
           <text className="text-gray-300 ml-1 text-[1.5rem] font-bold mb-2">{currentTitle}</text>
         </div>
