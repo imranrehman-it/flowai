@@ -3,6 +3,7 @@ import { ChatBubble } from './ChatBubble';
 import { recordChat } from '@/utilities/db/dbHelpers'
 import { getSession, useSession } from 'next-auth/react';
 import ClipLoader from "react-spinners/ClipLoader";
+import { useChat } from '@/context/ChatContext';
 
 interface Chat {
     _id: string;
@@ -12,8 +13,7 @@ interface Chat {
 }
 
 
-export const MainContent = ({currentChat}: {currentChat: Chat}) => {
-
+export const MainContent = () => {
   const [prompt, setPrompt] = useState('');
   const [responses, setResponses] = useState<{ role: string; content: string }[]>([]);
   const [answer, setAnswer] = useState('');
@@ -21,6 +21,11 @@ export const MainContent = ({currentChat}: {currentChat: Chat}) => {
   const [currentPrompt, setCurrentPrompt] = useState('');
   const [currentTitle, setCurrentTitle] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const {currentChat, chats} = useChat()
+
+  useEffect(() => {
+    console.log('something in chat has changed')
+  },[chats])
 
   const [loading, setLoading] = useState(false)
 

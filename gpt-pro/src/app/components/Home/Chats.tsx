@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import { Chat } from './Chat'
+import { useChat } from '../../../context/ChatContext'
 
 
 interface Chat {
@@ -16,7 +17,7 @@ interface Session {
 }
 
 export const Chats = ({handleChatClick}: {handleChatClick: (chat: Chat) => void}) => {
-  const [chats, setChats] = useState<Chat[]>([])
+  const {chats, setChats, updateChat, addChats} = useChat()
   const {data: session, status} = useSession() as {data: Session, status: string} | {data: null, status: string}
   const [selectedChat, setSelectedChat] = useState();
   useEffect(()=>{
@@ -52,7 +53,7 @@ export const Chats = ({handleChatClick}: {handleChatClick: (chat: Chat) => void}
 
         const newChat = await response.json()
         console.log(newChat)
-        setChats(prevChats => [...prevChats, newChat.newChat])
+        addChats(newChat.newChat)
 
     }catch(error){
         console.log(error)

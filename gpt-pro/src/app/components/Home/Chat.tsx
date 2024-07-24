@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { MdEdit } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+import { useChat } from "../../../context/ChatContext";
 
 
 interface Chat {
@@ -14,6 +15,7 @@ interface Chat {
 export const Chat = ({chat, handleChatClick, user_id}: {chat: Chat, handleChatClick: (chat: Chat) => void, user_id: string}) => {
     const [title, setTitle] = useState('')
     const [editMode, setEditMode] = useState(false)
+    const {updateChat} = useChat()
 
     useEffect(()=>{
         setTitle(chat.title)
@@ -30,6 +32,7 @@ export const Chat = ({chat, handleChatClick, user_id}: {chat: Chat, handleChatCl
             });
             const data = await response.json()
             setTitle(data.title)
+            updateChat(data)
             toggleEditMode()
         }catch(error){
             console.log(error)

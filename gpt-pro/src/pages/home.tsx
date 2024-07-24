@@ -10,6 +10,7 @@ import { PromptBar } from '@/app/components/Home/PromptBar'
 import {getSession, useSession} from 'next-auth/react'
 import { useRouter } from 'next/router';
 
+import {useChat} from '../context/ChatContext'
 import Image from 'next/image'
 
 const Home = () => {
@@ -17,17 +18,9 @@ const Home = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const [currentChat, setCurrentChat] = useState(null)
+  const {currentChat, setCurrentChat, chats} = useChat()
 
-
-  interface Chat {
-    _id: string,
-    title: string,
-    user: string,
-    messages: [{role: string, content: string}]
-  }
-
-  const handleChatClick = (chat: Chat) => {
+  const handleChatClick = (chat) => {
     setCurrentChat(chat)
   }
 
@@ -73,11 +66,11 @@ const Home = () => {
       
       <div className="flex flex-1 overflow-hidden">
         <Chats handleChatClick={handleChatClick} />
-        <MainContent currentChat={currentChat}/>
+        <MainContent/>
         <PromptBar currentChat={currentChat} scrollToChat={scrollToChat}/>
       </div>
       
-      <footer className="bg-gray-900 text-white p-4 rounded-lg m-2">Footer</footer>
+
     </div>
 }
     </>

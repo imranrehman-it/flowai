@@ -1,11 +1,12 @@
 import React from 'react'
 import { signOut } from 'next-auth/react'
+import { TbLogout } from "react-icons/tb";
 
 
 
 export const SignOut = () => {
   return (
-    <button className='text-xs text-red-500 ' onClick={()=>signOut()}>Logout</button>
+    <TbLogout className='text-sm text-red-500 font-bold cursor-pointer' onClick={()=>signOut()}/>
   )
 }
 
