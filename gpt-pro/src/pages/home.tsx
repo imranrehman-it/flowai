@@ -67,7 +67,7 @@ const Home = () => {
       <div className="flex flex-1 overflow-hidden">
         <Chats handleChatClick={handleChatClick} />
         <MainContent/>
-        <PromptBar currentChat={currentChat} scrollToChat={scrollToChat}/>
+        <PromptBar scrollToChat={scrollToChat}/>
       </div>
       
 
